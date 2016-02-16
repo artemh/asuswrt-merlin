@@ -18,6 +18,7 @@ body{
 	background-size: 1280px 1076px;
 	background-position: center 0%;
 	margin: 0px; 
+	background:#283437\9;
 }
 .title_name {
 	font-size: 30pt;
@@ -42,15 +43,12 @@ body{
 }
 .button{
 	background-color:#279FD9;
-	/*background:rgba(255,255,255,0.1);
-	border: solid 1px #6e8385;*/
 	border-radius: 4px ;
 	transition: visibility 0s linear 0.218s,opacity 0.218s,background-color 0.218s;
 	height: 48px;
 	width: 200px;
 	font-size: 14pt;
 	color:#fff;
-	color:#000\9; /* IE6 IE7 IE8 */
 	text-align: center;
 	float:right; 
 	margin:25px 79px 0px 39px;
@@ -61,14 +59,14 @@ body{
 }
 .form_input{
 	background-color:rgba(255,255,255,0.2);
+	background-color:#576D73\9;
 	border-radius: 4px;
 	padding:13px 11px;
 	width: 380px;
 	border: 0;
 	height:25px;
 	color:#fff;
-	color:#000\9; /* IE6 IE7 IE8 */
-	font-size:18px
+	font-size:18px;
 }
 .nologin{
 	margin:10px 0px 0px 78px;
@@ -198,6 +196,8 @@ var remaining_time;
 remaining_time = 60 - lock_time;
 var countdownid, rtime_obj;
 
+var redirect_page = '<% get_parameter("page"); %>';
+
 function initial(){
 	var flag = '<% get_parameter("error_status"); %>';
 
@@ -295,7 +295,6 @@ function countdownfunc(){
 }
 
 function login(){
-	var redirect_page = '<% get_parameter("page"); %>';
 
 	var trim = function(val){
 		val = val+'';
@@ -357,7 +356,7 @@ function login(){
 	document.form.login_authorization.value = btoa(document.form.login_username.value + ':' + document.form.login_passwd.value);
 	document.form.login_username.disabled = true;
 	document.form.login_passwd.disabled = true;
-	if(redirect_page == "" || redirect_page == "Logout.asp" || redirect_page == "Main_Login.asp")
+	if(redirect_page == "" || redirect_page == "Logout.asp" || redirect_page == "Main_Login.asp" || redirect_page.indexOf(" ") != -1 || (redirect_page.indexOf(".asp") == -1 && redirect_page.indexOf(".htm") == -1))
 		document.form.next_page.value = "index.asp";
 	else
 		document.form.next_page.value = redirect_page;

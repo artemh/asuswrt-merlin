@@ -438,7 +438,7 @@ void start_vpnclient(int clientNum)
 	// Start the VPN client
 	sprintf(&buffer[0], "/etc/openvpn/vpnclient%d", clientNum);
 	sprintf(&buffer2[0], "/etc/openvpn/client%d", clientNum);
-	taskset_ret = cpu_eval(NULL, (clientNum % 2 == 0 ? CPU1 : CPU0), &buffer[0], "--cd", &buffer2[0], "--config", "config.ovpn");
+	taskset_ret = cpu_eval(NULL, (clientNum % 2 == 0 ? CPU0 : CPU1), &buffer[0], "--cd", &buffer2[0], "--config", "config.ovpn");
 
 	vpnlog(VPN_LOG_INFO,"Starting OpenVPN client %d", clientNum);
 
@@ -817,12 +817,6 @@ void start_vpnserver(int serverNum)
 		fprintf(fp_client, "proto %s\n", nvram_safe_get(&buffer[0]));
 	else
 		fprintf(fp_client, "proto tcp-client\n");
-
-	// Don't explicitely set socket buffer size
-	sprintf(&buffer[0], "vpn_server%d_sockbuf", serverNum);
-	if (nvram_match(&buffer[0], "1")) {
-		fprintf(fp, "rcvbuf 0\nsndbuf 0\n");
-	}
 
 	//port
 	sprintf(&buffer[0], "vpn_server%d_port", serverNum);

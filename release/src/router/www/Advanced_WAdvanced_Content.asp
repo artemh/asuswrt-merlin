@@ -253,7 +253,7 @@ function initial(){
 			based_modelid == "RT-AC68U" || based_modelid == "RT-AC68U_V2" || based_modelid == "DSL-AC68U" ||
 			based_modelid == "RT-AC87U" || based_modelid == "EA-AC87" ||
 			based_modelid == "RT-AC88U" || based_modelid == "RT-AC3100" || 
-			based_modelid == "RT-AC5300" || based_modelid == "RT-AC1200G" || based_modelid == "RT-AC1200G+")
+			based_modelid == "RT-AC5300")
 		{
 			document.getElementById('wl_txbf_desc').innerHTML = "802.11ac Beamforming";
 			inputCtrl(document.form.wl_txbf, 1);
@@ -371,7 +371,7 @@ function initial(){
 		based_modelid == "RT-AC68U" || based_modelid == "RT-AC68U_V2" || based_modelid == "DSL-AC68U" ||
 		based_modelid == "RT-AC69U" || based_modelid == "RT-AC87U" || based_modelid == "RT-AC3200" ||
 		based_modelid == "RT-AC88U" || based_modelid == "RT-AC3100" || based_modelid == "RT-AC5300" ||
-		based_modelid == "RT-AC1200G+"){
+		based_modelid == "RT-AC1200G" || based_modelid == "RT-AC1200G+"){
 		
 		inputCtrl(document.form.wl_atf, 1);
 		if(based_modelid == "RT-AC87U" && '<% nvram_get("wl_unit"); %>' == '1')	

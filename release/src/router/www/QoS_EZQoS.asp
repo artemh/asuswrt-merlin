@@ -14,7 +14,6 @@
 <link rel="stylesheet" type="text/css" href="usp_style.css">
 <link rel="stylesheet" type="text/css" href="ParentalControl.css">
 <link rel="stylesheet" type="text/css" href="css/icon.css">
-<link rel="stylesheet" type="text/css" href="css/element.css">
 <script type="text/javascript" src="/state.js"></script>
 <script type="text/javascript" src="/popup.js"></script>
 <script type="text/javascript" src="/help.js"></script>
@@ -318,6 +317,8 @@ function initial(){
 		document.getElementById('download_tr').style.display = "none";
 		document.getElementById('qos_type_tr').style.display = "none";
 		if(bwdpi_support){
+			document.getElementById('int_type').style.display = "";
+			document.getElementById('int_type_link').style.display = "";
 			document.getElementById('bandwidth_setting_tr').style.display = "none";		
 			show_settings("NonAdaptive");
 		}			
@@ -357,56 +358,7 @@ function initial(){
 	//addOnlineHelp(document.getElementById("faq"), ["ASUSWRT", "QoS"]);
 
 	if((isFirefox || isOpera) && document.getElementById("FormTitle"))
-		document.getElementById("FormTitle").className = "FormTitle";
-		
-	$("#switch").click(function(){
-		if(document.getElementById('switch').checked){	//enable QoS
-			document.form.qos_enable.value = 1;
-			document.form.qos_type[0].disabled = false;
-			document.form.qos_type[1].disabled = false;
-			document.form.qos_type[2].disabled = false;
-			document.form.qos_bw_rulelist.disabled = false;
-			if(document.form.qos_enable_orig.value != 1){
-				if(document.getElementById('int_type').checked == true && bwdpi_support)
-					document.form.next_page.value = "QoS_EZQoS.asp";
-				else if(document.getElementById('trad_type').checked)		//Traditional QoS
-					document.form.next_page.value = "Advanced_QOSUserRules_Content.asp";
-			}																
-																
-			if(document.form.qos_type.value != 2){
-				document.getElementById('upload_tr').style.display = "";
-				document.getElementById('download_tr').style.display = "";
-			}
-			else{
-				document.getElementById('upload_tr').style.display = "none";
-				document.getElementById('download_tr').style.display = "none";
-			}
-
-			document.getElementById('qos_type_tr').style.display = "";
-			if(bwdpi_support){
-				document.getElementById('int_type').style.display = "";
-				document.getElementById('int_type_link').style.display = "";
-				document.getElementById('qos_enable_hint').style.display = "table-cell";
-				change_qos_type(document.form.qos_type_orig.value);
-			}	
-		}
-		else{
-			document.form.qos_enable.value = 0;															
-			document.getElementById('upload_tr').style.display = "none";
-			document.getElementById('download_tr').style.display = "none";
-			document.getElementById('qos_type_tr').style.display = "none";	
-			document.getElementById('bandwidth_setting_tr').style.display = "none";	
-			document.getElementById('list_table').style.display = "none";	
-			document.form.qos_bw_rulelist.disabled = true;
-			document.form.qos_type[0].disabled = true;
-			document.form.qos_type[1].disabled = true;
-			document.form.qos_type[2].disabled = true;
-			if(bwdpi_support){																																		
-				document.getElementById('qos_enable_hint').style.display = "none";
-				show_settings("NonAdaptive");
-			}														
-		}												
-	});	
+		document.getElementById("FormTitle").className = "FormTitle";	
 }
 
 function init_changeScale(){
@@ -455,14 +407,14 @@ function submitQoS(){
 				return;
 			}
 			else if(document.form.qos_type.value == 0 && document.form.obw.value == 0){		// To check field is 0 && Traditional QoS
-				alert("Upload Bandwidth can not be 0");
+				alert("Upload Bandwidth can not be 0");	/* untranslated */
 				document.form.obw.focus();
 				document.form.obw.select();
 				return;
 			
 			}
 			else if(document.form.obw.value.split(".").length > 2){		//To check more than two point symbol
-				alert("The format of field of upload bandwidth is invalid");
+				alert("The format of field of upload bandwidth is invalid"); /* untranslated */
 				document.form.obw.focus();
 				document.form.obw.select();
 				return;	
@@ -475,13 +427,13 @@ function submitQoS(){
 				return;
 			}
 			else if(document.form.qos_type.value == 0 && document.form.ibw.value == 0){		// To check field is 0 && Traditional QoS
-				alert("Download Bandwidth can not be 0");
+				alert("Download Bandwidth can not be 0");	/* untranslated */
 				document.form.ibw.focus();
 				document.form.ibw.select();
 				return;
 			}
 			else if(document.form.ibw.value.split(".").length > 2){
-				alert("The format of field of download bandwidth is invalid");
+				alert("The format of field of download bandwidth is invalid");	/* untranslated */
 				document.form.ibw.focus();
 				document.form.ibw.select();
 				return;	
@@ -516,6 +468,11 @@ function submitQoS(){
 			}
 		}
 		else{		//Bandwidth Limiter
+			if(document.form.PC_devicename.value != ""){
+				alert("You must press add icon to add a new rule first.");	//untranslated
+				return false;
+			}
+			
 			document.form.qos_bw_rulelist.value = qos_bw_rulelist;	
 		}
 	}	
@@ -536,8 +493,20 @@ function submitQoS(){
 		}
 	}
 	
-	showLoading();
-	document.form.submit();		
+	/*if(document.form.qos_type.value == 2){
+		if((document.form.qos_enable.value != document.form.qos_enable_orig.value) && document.form.qos_enable.value == 0){
+			document.form.action_script.value = "restart_qos;restart_firewall";
+			showLoading();
+			document.form.submit();		
+		}
+		else{
+			location.href = "Bandwidth_Limiter.asp";
+		}
+	}
+	else{*/
+		showLoading();
+		document.form.submit();		
+	//}
 }
 
 function change_qos_type(value){
@@ -884,9 +853,21 @@ function addRow_main(obj, length){
 		document.getElementById("download_rate").focus();
 		return false;
 	}
-	
+
+	if(document.getElementById("download_rate").value.split(".").length > 2 || document.getElementById("download_rate").value < 0.1){
+		alert("<#min_bound#> : 0.1 Mb/s");
+		document.getElementById("download_rate").focus();
+		return false;
+	}
+        
 	if(document.getElementById("upload_rate").value == ""){
 		alert("<#JS_fieldblank#>");
+		document.getElementById("upload_rate").focus();
+		return false;
+	}
+        
+	if(document.getElementById("upload_rate").value.split(".").length > 2 || document.getElementById("upload_rate").value < 0.1){
+		alert("<#min_bound#> : 0.1 Mb/s");
 		document.getElementById("upload_rate").focus();
 		return false;
 	}
@@ -1239,7 +1220,7 @@ function check_field(){
 			<input type="hidden" name="qos_obw" value="<% nvram_get("qos_obw"); %>" disabled>
 			<input type="hidden" name="qos_ibw" value="<% nvram_get("qos_ibw"); %>" disabled>
 			<input type="hidden" name="bwdpi_app_rulelist" value="<% nvram_get("bwdpi_app_rulelist"); %>" disabled>
-			<input type="hidden" name="qos_bw_rulelist" value="<% nvram_get("qos_bw_rulelist"); %>">
+			<input type="hidden" name="qos_bw_rulelist" value="">
 
 			<table width="95%" border="0" align="left" cellpadding="0" cellspacing="0" class="FormTitle" id="FormTitle" style="height:820px;">
 				<tr>
@@ -1300,23 +1281,51 @@ function check_field(){
 									<table style="margin-left:3px;" width="95%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
 										<tr>
 											<th><#Enable_QoS#></th> <!--untranslated string-->
-											<td colspan="2">		
-												<div class="switch_field" style="display:table-cell">
-													<label for="switch">
-														<input id="switch" class="switch" type="checkbox" style="display:none" <% nvram_match("qos_enable", "1", "checked"); %>>
-														<div class="switch_container" >
-															<div class="switch_bar"></div>
-															<div class="switch_circle transition_style">
-																<div></div>
-															</div>
-														</div>
-													</label>
-												</div>
-												<div id="qos_enable_hint" style="color:#FC0;vertical-align:middle;display:none">Enabling QoS may take several minutes.<!--#Adaptive_note#--></div><!--untranslated string-->
-												<script>
+											<td colspan="2">
+												<div class="left" style="width:94px; float:left; cursor:pointer;" id="radio_qos_enable"></div>
+													<script type="text/javascript">
+														$('#radio_qos_enable').iphoneSwitch('<% nvram_get("qos_enable"); %>', 
+															 function() {
+																document.form.qos_enable.value = 1;
+																if(document.form.qos_enable_orig.value != 1){
+																	if(document.getElementById('int_type').checked == true && bwdpi_support)
+																		document.form.next_page.value = "QoS_EZQoS.asp";
+																	else if(document.getElementById('trad_type').checked)		//Traditional QoS
+																		document.form.next_page.value = "Advanced_QOSUserRules_Content.asp";
+																}																
+																
+																if(document.form.qos_type.value != 2){
+																	document.getElementById('upload_tr').style.display = "";
+																	document.getElementById('download_tr').style.display = "";
+																}
+																else{
+																	document.getElementById('upload_tr').style.display = "none";
+																	document.getElementById('download_tr').style.display = "none";
+																}
 
-												
-												</script>
+																document.getElementById('qos_type_tr').style.display = "";
+																if(bwdpi_support){
+																	document.getElementById('qos_enable_hint').style.display = "";
+																	change_qos_type(document.form.qos_type_orig.value);
+																}	
+															 },
+															 function() {
+																document.form.qos_enable.value = 0;																
+																document.getElementById('upload_tr').style.display = "none";
+																document.getElementById('download_tr').style.display = "none";
+																document.getElementById('qos_type_tr').style.display = "none";
+																document.getElementById('bandwidth_setting_tr').style.display = "none";
+																document.getElementById('list_table').style.display = "none";
+	
+																if(bwdpi_support){																	
+																	
+																	document.getElementById('qos_enable_hint').style.display = "none";
+																	show_settings("NonAdaptive");
+																}	
+															 }
+														);
+													</script>			
+												<div id="qos_enable_hint" style="color:#FC0;margin:5px 0px 0px 100px;display:none">Enabling QoS may take several minutes.<!--#Adaptive_note#--></div><!--untranslated string-->
 											</td>
 										</tr>
 										<tr id="qos_type_tr" style="display:none">
@@ -1327,17 +1336,14 @@ function check_field(){
 												<input id="bw_limit_type" name="qos_type" value="2" onClick="change_qos_type(this.value);" type="radio" <% nvram_match("qos_type", "2","checked"); %>><a class="hintstyle" href="javascript:void(0);" onClick="openHint(20, 8)"><label for="bw_limit_type"><#Bandwidth_Limiter#></label></a>
 											</td>
 										</tr>
-										<tr id="bandwidth_setting_tr" style="">
+										<tr id="bandwidth_setting_tr" style="display:none">
 											<th>Bandwidth Setting</th>
 											<td colspan="2">
-												<div>									
-													<input type="radio" name="automatic_enable" class="menu" style="display:none" id="auto">
-													<label for="auto" id="auto_label" class="bandwidth_setting bandwidth_setting_left" onclick="setTimeout('bandwidth_setting();', 1)">Automatic</label>
-													<input type="radio" name="automatic_enable" class="menu" style="display:none" id="manu">
-													<label for="manu" id="manu_label" class="bandwidth_setting bandwidth_setting_right" style="" onclick="setTimeout('bandwidth_setting();', 1)">Manual</label>					
-												</div>
+												<input id="auto" name="bw_setting_name" onClick="bandwidth_setting();" type="radio"><label for="auto">Automatic</label>
+												<input id="manu" name="bw_setting_name" onClick="bandwidth_setting();" type="radio"><label for="manu">Manual</label>
 											</td>
-										</tr>									
+										</tr>		
+										
 										<tr id="upload_tr">
 											<th><a class="hintstyle" href="javascript:void(0);" onClick="openHint(20, 2);"><#upload_bandwidth#></a></th>
 											<td>

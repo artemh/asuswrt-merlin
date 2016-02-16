@@ -191,34 +191,34 @@ function ISP_Profile_Selection(isp){
 
 function validForm(){
 	if (!dsl_support){
-	if(document.form.switch_wantag.value == "manual"){
-		if(document.form.switch_wan1tagid.value == "" && document.form.switch_wan2tagid.value == "")
-			document.form.switch_stb_x.value = "0";
-		else if(document.form.switch_wan1tagid.value == "" && document.form.switch_wan2tagid.value != "")
-			document.form.switch_stb_x.value = "3";
-		else if(document.form.switch_wan1tagid.value != "" && document.form.switch_wan2tagid.value == "")
-			document.form.switch_stb_x.value = "4";
-		else
-			document.form.switch_stb_x.value = "6";
+		if(document.form.switch_wantag.value == "manual"){
+			if(document.form.switch_wan1tagid.value == "" && document.form.switch_wan2tagid.value == "")
+				document.form.switch_stb_x.value = "0";
+			else if(document.form.switch_wan1tagid.value == "" && document.form.switch_wan2tagid.value != "")
+				document.form.switch_stb_x.value = "3";
+			else if(document.form.switch_wan1tagid.value != "" && document.form.switch_wan2tagid.value == "")
+				document.form.switch_stb_x.value = "4";
+			else
+				document.form.switch_stb_x.value = "6";
 
-            if(document.form.switch_wan0tagid.value.length > 0 && !validator.rangeNull(document.form.switch_wan0tagid, 2, 4094, ""))
-                return false;
-                
+	        if(document.form.switch_wan0tagid.value.length > 0 && !validator.rangeNull(document.form.switch_wan0tagid, 2, 4094, ""))
+	            return false;
+	            
 			if(document.form.switch_wan1tagid.value.length > 0 && !validator.rangeNull(document.form.switch_wan1tagid, 2, 4094, ""))
-                return false;           
+	            return false;
 			
-            if(document.form.switch_wan2tagid.value.length > 0 && !validator.rangeNull(document.form.switch_wan2tagid, 2, 4094, ""))
+	        if(document.form.switch_wan2tagid.value.length > 0 && !validator.rangeNull(document.form.switch_wan2tagid, 2, 4094, ""))
 				return false;           
 
-            if(document.form.switch_wan0prio.value.length > 0 && !validator.range(document.form.switch_wan0prio, 0, 7))
-                return false;
+	        if(document.form.switch_wan0prio.value.length > 0 && !validator.range(document.form.switch_wan0prio, 0, 7))
+	            return false;
 
-            if(document.form.switch_wan1prio.value.length > 0 && !validator.range(document.form.switch_wan1prio, 0, 7))
-                return false;
+	        if(document.form.switch_wan1prio.value.length > 0 && !validator.range(document.form.switch_wan1prio, 0, 7))
+	            return false;
 
-            if(document.form.switch_wan2prio.value.length > 0 && !validator.range(document.form.switch_wan2prio, 0, 7))
-                return false;
-        }
+	        if(document.form.switch_wan2prio.value.length > 0 && !validator.range(document.form.switch_wan2prio, 0, 7))
+	            return false;
+	    }
 	}
 	
 	return true;
@@ -377,7 +377,7 @@ function change_rmvlan(){
 					<option value="m1_fiber" <% nvram_match("switch_wantag", "m1_fiber", "selected"); %>>M1-Fiber</option>
 					<option value="maxis_fiber" <% nvram_match("switch_wantag", "maxis_fiber", "selected"); %>>Maxis-Fiber</option>
 					<option value="maxis_fiber_sp" <% nvram_match("switch_wantag", "maxis_fiber_sp", "selected"); %>>Maxis-Fiber-Special</option>
-					<option value="movistar" <% nvram_match("switch_wantag", "movistar", "selected"); %>>Movistar</option>
+					<!--option value="movistar" <% nvram_match("switch_wantag", "movistar", "selected"); %>>Movistar</option-->
 					<option id="meoOption" value="meo" <% nvram_match("switch_wantag", "meo", "selected"); %>>Meo</option>
 <!--					
 					<option value="maxis_fiber_iptv" <% nvram_match("switch_wantag", "maxis_fiber_iptv", "selected"); %>>Maxis-Fiber-IPTV</option>

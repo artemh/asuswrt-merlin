@@ -49,7 +49,16 @@ body{
 	left:0px;
 	border-top-left-radius:5px;
 	border-bottom-left-radius:5px;
-	
+}
+@-moz-document url-prefix(){ 		/*Firefox Hack*/
+	.container::after{
+		top:0;
+	}
+}
+@supports (-ms-accelerator:true) {		/*Edge Browser Hack*/
+  	.container::after{
+		top:0;
+	}
 }
 
 .switch input:checked~.container{

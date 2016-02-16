@@ -96,10 +96,14 @@
 #define LOG_COMMIT_PERIOD	2		/* 2 x 30 seconds */
 static int log_commit_count = 0;
 #endif
-#if defined(RTCONFIG_USB_MODEM) && (defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2) || defined(RTCONFIG_UBIFS))
+#if defined(RTCONFIG_USB_MODEM)
+#define LOG_MODEM_PERIOD	20		/* 10 minutes */
+static int log_modem_count = 0;
+#if defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2) || defined(RTCONFIG_UBIFS)
 #define MODEM_FLOW_PERIOD	1
 static int modem_flow_count = 0;
 static int modem_data_save = 0;
+#endif
 #endif
 #if defined(RTCONFIG_TOR) && (defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2))
 #define TOR_CHECK_PERIOD	10		/* 10 x 30 seconds */
@@ -1839,8 +1843,77 @@ void fake_wl_led_5g(void)
 }
 #endif
 
+static int led_confirmed = 0;
+extern int led_gpio_table[LED_ID_MAX];
+
+int confirm_led()
+{
+	if(
+		1
+#if defined(RTN53) || defined(RTN18U)
+		&& led_gpio_table[LED_2G] != 0xff
+		&& led_gpio_table[LED_2G] != -1
+#endif
+#if defined(RTCONFIG_FAKE_ETLAN_LED)
+		&& led_gpio_table[LED_LAN] != 0xff
+		&& led_gpio_table[LED_LAN] != -1
+#endif
+#if defined(RTCONFIG_USB) && !defined(RTCONFIG_BLINK_LED)
+#ifdef RTCONFIG_USB_XHCI
+		&& led_gpio_table[LED_USB3] != 0xff
+		&& led_gpio_table[LED_USB3] != -1
+#endif
+		&& led_gpio_table[LED_USB] != 0xff
+		&& led_gpio_table[LED_USB] != -1
+#endif
+#ifdef RTCONFIG_MMC_LED
+		&& led_gpio_table[LED_MMC] != 0xff
+		&& led_gpio_table[LED_MMC] != -1
+#endif
+#if defined(RTCONFIG_BRCM_USBAP) || defined(RTAC66U) || defined(BCM4352)
+		&& led_gpio_table[LED_5G] != 0xff
+		&& led_gpio_table[LED_5G] != -1
+#endif
+#ifdef RTCONFIG_DSL
+#ifndef RTCONFIG_DUALWAN
+		&& led_gpio_table[LED_WAN] != 0xff
+		&& led_gpio_table[LED_WAN] != -1
+#endif
+#endif
+	)
+		led_confirmed = 1;
+	else 
+		led_confirmed = 0;
+		
+
+	return led_confirmed;
+}
+
+static int swled_alloff_x = 0;
+static int swled_alloff_counts = 0;
+
 void led_check(int sig)
 {
+	int all_led;
+	int turnoff_counts = swled_alloff_counts?:3;
+
+	if((all_led=nvram_get_int("AllLED")) == 0 && swled_alloff_x < turnoff_counts) {
+		/* turn off again x times in case timing issues */
+		led_table_ctrl(LED_OFF);
+		swled_alloff_x++;
+		_dprintf("force turnoff led table again!\n");
+		return;
+	}
+
+	if(all_led)
+		swled_alloff_x = 0;
+	else
+		return;
+
+	if(!confirm_led()) {
+		get_gpio_values_once(1);
+	}
+
 #ifdef RTCONFIG_WLAN_LED
 	if (nvram_contains_word("rc_support", "led_2g"))
 	{
@@ -1924,6 +1997,17 @@ if (nvram_match("dsltmp_adslsyncsts","up") && nvram_match("wan0_state_t","2"))
 	led_DSLWAN();
 #endif
 #endif
+}
+
+void led_table_ctrl(int on_off)
+{
+	int i;
+
+	for(i=0; i < LED_ID_MAX; ++i) {
+		if(led_gpio_table[i] != 0xff && led_gpio_table[i] != -1) {
+			led_control(i, on_off);
+		}
+	}
 }
 
 /* Paul add 2012/10/25 */
@@ -2307,7 +2391,6 @@ void syslog_commit_check(void)
 		return;
 
 	if(++log_commit_count >= LOG_COMMIT_PERIOD) {
-
 		jffs_stat = stat("/jffs/syslog.log", &jffs_log_stat);
 		if( jffs_stat == -1) {
 			eval("cp", "/tmp/syslog.log", "/tmp/syslog.log-1", "/jffs");
@@ -2323,7 +2406,41 @@ void syslog_commit_check(void)
 }
 #endif
 
-#if defined(RTCONFIG_USB_MODEM) && (defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2) || defined(RTCONFIG_UBIFS))
+#if defined(RTCONFIG_USB_MODEM)
+void modem_log_check(void){
+#define MODEMLOG_FILE "/tmp/usb.log"
+#define MAX_MODEMLOG_LINE 3
+	FILE *fp;
+	char cmd[64], var[16];
+	int line = 0;
+
+	if(++log_modem_count >= LOG_MODEM_PERIOD){
+		snprintf(cmd, 64, "cat %s |wc -l", MODEMLOG_FILE);
+		if((fp = popen("cat /tmp/usb.log |wc -l", "r")) != NULL){
+			var[0] = '\0';
+			while(fgets(var, 16, fp)){
+				line = atoi(var);
+			}
+			fclose(fp);
+
+			if(line > MAX_MODEMLOG_LINE){
+				snprintf(cmd, 64, "cat %s |tail -n %d > %s-1", MODEMLOG_FILE, MAX_MODEMLOG_LINE, MODEMLOG_FILE);
+				system(cmd);
+
+				snprintf(cmd, 64, "mv %s-1 %s", MODEMLOG_FILE, MODEMLOG_FILE);
+				system(cmd);
+
+				snprintf(cmd, 64, "rm -f %s-1", MODEMLOG_FILE);
+				system(cmd);
+			}
+		}
+
+		log_modem_count = 0;
+	}
+	return;
+}
+
+#if defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2) || defined(RTCONFIG_UBIFS)
 void modem_flow_check(void){
 	time_t now, start, diff_mon;
 	struct tm tm_now, tm_start;
@@ -2442,6 +2559,7 @@ void modem_flow_check(void){
 	}
 	return;
 }
+#endif
 #endif
 
 static void auto_firmware_check()
@@ -3243,8 +3361,11 @@ void watchdog(int sig)
 #if defined(RTCONFIG_JFFS2LOG) && (defined(RTCONFIG_JFFS2)||defined(RTCONFIG_BRCM_NAND_JFFS2))
 	syslog_commit_check();
 #endif
-#if defined(RTCONFIG_USB_MODEM) && (defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2) || defined(RTCONFIG_UBIFS))
+#if defined(RTCONFIG_USB_MODEM)
+	modem_log_check();
+#if defined(RTCONFIG_JFFS2) || defined(RTCONFIG_BRCM_NAND_JFFS2) || defined(RTCONFIG_UBIFS)
 	modem_flow_check();
+#endif
 #endif
 //	auto_firmware_check();
 
@@ -3390,11 +3511,15 @@ int watchdog02_main(int argc, char *argv[])
 int sw_devled_main(int argc, char *argv[])
 {
 	FILE *fp;
+
 	/* write pid */
 	if((fp = fopen("/var/run/sw_devled.pid", "w")) != NULL){
 		fprintf(fp, "%d", getpid());
 		fclose(fp);
 	}
+
+	swled_alloff_counts = nvram_get_int("offc");
+
 	/* set the signal handler */
 	signal(SIGALRM, led_check);
 

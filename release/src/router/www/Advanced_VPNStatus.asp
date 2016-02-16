@@ -68,22 +68,37 @@ function refreshState(){
 			case 1:
 				client_state = vpnc_state_t1;
 				client_errno = vpnc_errno_t1;
+				client_server = " (<% nvram_get("vpn_client1_addr"); %> " + 
+				                "<% nvram_get("vpn_client1_proto"); %>:" +
+				                "<% nvram_get("vpn_client1_port"); %>)";
 				break;
 			case 2:
 				client_state = vpnc_state_t2;
 				client_errno = vpnc_errno_t2;
+                                client_server = " (<% nvram_get("vpn_client2_addr"); %> " + 
+                                                "<% nvram_get("vpn_client2_proto"); %>:" +
+                                                "<% nvram_get("vpn_client2_port"); %>)";
 				break;
 			case 3:
 				client_state = vpnc_state_t3;
 				client_errno = vpnc_errno_t3;
+                                client_server = " (<% nvram_get("vpn_client3_addr"); %> " + 
+                                                "<% nvram_get("vpn_client3_proto"); %>:" +
+                                                "<% nvram_get("vpn_client3_port"); %>)";
 				break;
 			case 4:
 				client_state = vpnc_state_t4;
 				client_errno = vpnc_errno_t4;
+                                client_server = " (<% nvram_get("vpn_client4_addr"); %> " + 
+                                                "<% nvram_get("vpn_client4_proto"); %>:" +
+                                                "<% nvram_get("vpn_client4_port"); %>)";
 				break;
 			case 5:
 				client_state = vpnc_state_t5;
 				client_errno = vpnc_errno_t5;
+                                client_server = " (<% nvram_get("vpn_client5_addr"); %> " + 
+                                                "<% nvram_get("vpn_client5_proto"); %>:" +
+                                                "<% nvram_get("vpn_client5_port"); %>)";
 				break;
 		}
 
@@ -92,10 +107,10 @@ function refreshState(){
 				document.getElementById("client"+unit+"_Block_Running").innerHTML = state_clnt_disc;
 				break;
 			case "1":
-				document.getElementById("client"+unit+"_Block_Running").innerHTML = state_clnt_cing;
+				document.getElementById("client"+unit+"_Block_Running").innerHTML = state_clnt_cing + client_server;
 				break;
 			case "2":
-				document.getElementById("client"+unit+"_Block_Running").innerHTML = state_clnt_ced;
+				document.getElementById("client"+unit+"_Block_Running").innerHTML = state_clnt_ced + client_server;
 				break;
 			case "-1":
 				code = state_clnt_err;
@@ -541,7 +556,7 @@ function show_vpnc_rulelist(){
 				</table>
 
 			<br>
-				<table width="100%" id="client1" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
+				<table width="100%" id="client3" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
 					<thead>
 						<tr>
 							<td>OpenVPN Client 3<span id="client3_Block_Running" style="background: transparent;"></span></td>
@@ -555,7 +570,7 @@ function show_vpnc_rulelist(){
 
 				</table>
 			<br>
-				<table width="100%" id="client1" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
+				<table width="100%" id="client4" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3"  class="FormTable">
 					<thead>
 						<tr>
 							<td>OpenVPN Client 4<span id="client4_Block_Running" style="background: transparent;"></span></td>
@@ -569,7 +584,7 @@ function show_vpnc_rulelist(){
 
 				</table>
 			<br>
-				<table width="100%" id="client1" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
+				<table width="100%" id="client5" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">
 					<thead>
 						<tr>
 							<td>OpenVPN Client 5<span id="client5_Block_Running" style="background: transparent;"></span></td>

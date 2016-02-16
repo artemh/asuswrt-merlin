@@ -322,7 +322,6 @@ ifneq ($(RTCONFIG_BWDPI),y)
 	rm -rf $(INSTALLDIR)/www/AiProtection_HomeProtection.asp
 	rm -rf $(INSTALLDIR)/www/AiProtection_WebProtector.asp
 	rm -rf $(INSTALLDIR)/www/images/New_ui/QoS_quick
-	rm -rf $(INSTALLDIR)/www/css/icon.css
 ifneq ($(RTCONFIG_PARENTALCTRL),y)
 	rm -rf $(INSTALLDIR)/www/blocking.asp
 endif
@@ -414,14 +413,16 @@ endif
 ifneq ($(BUILD_NAME),$(filter $(BUILD_NAME), RT-AC88U RT-AC3100 RT-AC5300 RT-AC3200))
 	rm -rf $(INSTALLDIR)/www/QIS_wizard_m.htm
 	rm -rf $(INSTALLDIR)/www/css/effect.css
-	rm -rf $(INSTALLDIR)/www/css/qis.css
 	rm -rf $(INSTALLDIR)/www/qis_m
 	rm -rf $(INSTALLDIR)/www/images/qis/icon_MAC_clone.svg
-	rm -rf $(INSTALLDIR)/www/images/qis/loading.gif
 	rm -rf $(INSTALLDIR)/www/images/qis/logo.png
+ifneq ($(BUILD_NAME),$(filter $(BUILD_NAME), RP-AC66 RP-AC68U))
+	rm -rf $(INSTALLDIR)/www/css/icon-qis.css
+	rm -rf $(INSTALLDIR)/www/images/qis/loading.gif
 	rm -rf $(INSTALLDIR)/www/images/qis/mainimage_img4.png
 	rm -rf $(INSTALLDIR)/www/images/qis/pattern3-3_10_A15.png
 	rm -rf $(INSTALLDIR)/www/images/qis/pattern3_05_4.png
+endif
 endif
 
 ifneq ($(RTCONFIG_DISK_MONITOR), y)
